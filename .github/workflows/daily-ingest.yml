@@ -1,7 +1,8 @@
 name: Daily German news ingest
 on:
   schedule:
-    # GitHub cron is UTC. This runs at 05:00 UTC (06:00 CET); in summer it runs at 07:00 CEST.
+    # 05:00 UTC is 06:00 CET; GitHub cron cannot follow Europe/Berlin DST.
+    # The workflow also supports manual dispatch, so schedule it at 04:00 UTC in CEST months if exact 06:00 is required.
     - cron: '0 5 * * *'
   workflow_dispatch:
 permissions:
@@ -19,6 +20,11 @@ jobs:
         env:
           PYTHONPATH: .
           DATABASE_URL: sqlite:///../data/german_helper.db
+          NEWS_PROVIDER: gnews
+          GNEWS_API_KEY: ${{ secrets.GNEWS_API_KEY }}
+          NEWS_LANGUAGE: de
+          NEWS_COUNTRY: de
+          NEWS_MAX_ARTICLES: 10
       - name: Commit durable SQLite artifact
         run: |
           git config user.name github-actions

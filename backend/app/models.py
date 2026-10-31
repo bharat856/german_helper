@@ -1,5 +1,5 @@
-from datetime import datetime, date
-from sqlalchemy import String, Text, Integer, DateTime, Date, Boolean, ForeignKey, JSON, UniqueConstraint
+from datetime import datetime
+from sqlalchemy import String, Text, Integer, DateTime, Boolean, ForeignKey, JSON, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
 
@@ -13,6 +13,10 @@ class Article(Base):
     canonical_url: Mapped[str] = mapped_column(String(1000), index=True)
     publication_date: Mapped[datetime] = mapped_column(DateTime)
     category: Mapped[str] = mapped_column(String(50), default="Nachrichten")
+    content: Mapped[str] = mapped_column(Text, default="")
+    image_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    provider: Mapped[str] = mapped_column(String(30), default="rss")
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     adaptations = relationship("Adaptation", back_populates="article", cascade="all, delete-orphan")
 
@@ -64,3 +68,11 @@ class SettingsRow(Base):
     preferred_level: Mapped[str] = mapped_column(String(2), default="B1")
     translations: Mapped[bool] = mapped_column(Boolean, default=True)
     feedback_language: Mapped[str] = mapped_column(String(20), default="English")
+
+class NewsRefresh(Base):
+    __tablename__ = "news_refreshes"
+    id: Mapped[int] = mapped_column(primary_key=True, default=1)
+    provider: Mapped[str] = mapped_column(String(30), default="gnews")
+    last_success_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    articles_count: Mapped[int] = mapped_column(Integer, default=0)

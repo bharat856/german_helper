@@ -12,6 +12,7 @@ class VocabularyItem(BaseModel):
 
 class ArticleOut(BaseModel):
     id: int; title: str; description: str; source_name: str; source_url: str; publication_date: datetime; category: str
+    content: str = ""; image_url: str | None = None; provider: str = "rss"; is_demo: bool = False
     model_config = ConfigDict(from_attributes=True)
 
 class AdaptedArticle(BaseModel):

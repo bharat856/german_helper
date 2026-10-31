@@ -21,7 +21,8 @@ class AIProvider:
         try:
             from google import genai
             client = genai.Client(api_key=self.settings.gemini_api_key)
-            prompt = f"""Rewrite this news item in German at CEFR {level}. {LEVEL_GUIDANCE[level]} Preserve every fact, date, number and attribution; never invent quotes or events. Use only the supplied text. Return JSON with title, adapted_article, vocabulary (objects german, article, english, example). Label nothing as original reporting.\nTitle: {article.title}\nSummary: {article.description}"""
+            source_text = "\n".join(part for part in (getattr(article, "content", ""), article.description) if part).strip()
+            prompt = f"""Create a German learning summary at CEFR {level}. {LEVEL_GUIDANCE[level]} This is a source excerpt, not a complete article: do not imply missing details, do not invent quotes, dates, statistics, people, or events, and preserve only facts supported by the source. Return JSON with title, adapted_article, vocabulary (objects german, article, english, example).\nHeadline: {article.title}\nSource excerpt: {source_text}"""
             for attempt in range(3):
                 try:
                     response = client.models.generate_content(model=self.settings.gemini_model, contents=prompt, config={"response_mime_type":"application/json"})

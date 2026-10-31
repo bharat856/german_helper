@@ -10,6 +10,13 @@ class Settings(BaseSettings):
     max_daily_articles: int = 10
     max_daily_generations: int = 30
     frontend_origin: str = "http://localhost:5173"
+    news_provider: str = "gnews"
+    gnews_api_key: str | None = None
+    news_language: str = "de"
+    news_country: str = "de"
+    news_max_articles: int = 10
+    news_refresh_min_seconds: int = 300
+    news_rss_fallback: bool = False
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 @lru_cache
